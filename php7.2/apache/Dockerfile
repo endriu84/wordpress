@@ -48,6 +48,30 @@ RUN set -ex; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 	rm -rf /var/lib/apt/lists/*
 
+# note for PHP 5.x you have to explicitly specify version pecl install xdebug-2.5.5 since newer versions of xdebug don't support 5.x any more
+RUN pecl install xdebug; \
+	docker-php-ext-enable xdebug
+
+RUN pecl install redis; \
+    docker-php-ext-enable redis
+
+# change uid and gid for user
+RUN usermod -u 1000 www-data; \
+    groupmod -g 1000 www-data; \
+	chown -R www-data:www-data /var/www/html
+
+# those settings works fine on my ubuntu 18 with VSCode debugger
+RUN { \
+		echo 'zend_extension=xdebug.so'; \
+		echo 'xdebug.remote_port=9000'; \
+		echo 'xdebug.remote_enable=1'; \
+		echo 'xdebug.remote_log=/tmp/xdebug.log'; \
+		echo 'xdebug.remote_connect_back=1'; \
+		echo 'xdebug.profiler_enable=0'; \
+		echo 'xdebug.profiler_enable_trigger=1'; \
+		echo 'xdebug.profiler_output_dir=/run/profiler'; \
+	} > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
 RUN { \

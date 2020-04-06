@@ -42,6 +42,32 @@ RUN set -ex; \
 	apk add --virtual .wordpress-phpexts-rundeps $runDeps; \
 	apk del .build-deps
 
+RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
+    && pecl install xdebug \
+    && pecl install redis \
+    && docker-php-ext-enable xdebug \
+    && docker-php-ext-enable redis.so \
+    && apk del -f .build-deps
+
+# change uid and gid for user
+RUN apk --no-cache add shadow; \
+    usermod -u 1000 www-data; \
+    groupmod -g 1000 www-data; \
+	chown -R www-data:www-data /var/www/html; \
+	apk del -f shadow
+
+# those settings works fine on my ubuntu 18 with VSCode debugger
+RUN { \
+		echo 'zend_extension=xdebug.so'; \
+		echo 'xdebug.remote_port=9000'; \
+		echo 'xdebug.remote_enable=1'; \
+		echo 'xdebug.remote_log=/tmp/xdebug.log'; \
+		echo 'xdebug.remote_connect_back=1'; \
+		echo 'xdebug.profiler_enable=0'; \
+		echo 'xdebug.profiler_enable_trigger=1'; \
+		echo 'xdebug.profiler_output_dir=/run/profiler'; \
+	} > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
 RUN { \
@@ -68,8 +94,11 @@ RUN { \
 
 VOLUME /var/www/html
 
-ENV WORDPRESS_VERSION 5.4
-ENV WORDPRESS_SHA1 d5f1e6d7cadd72c11d086a2e1ede0a72f23d993e
+ARG wordpress_version=5.4
+ARG wordpress_sha1=d5f1e6d7cadd72c11d086a2e1ede0a72f23d993e
+
+ENV WORDPRESS_VERSION ${wordpress_version}
+ENV WORDPRESS_SHA1 ${wordpress_sha1}
 
 RUN set -ex; \
 	curl -o wordpress.tar.gz -fSL "https://wordpress.org/wordpress-${WORDPRESS_VERSION}.tar.gz"; \

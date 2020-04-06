@@ -103,6 +103,3 @@ for phpVersion in "${phpVersions[@]}"; do
 		travisEnv+='\n  - VARIANT='"$dir"
 	done
 done
-
-travis="$(awk -v 'RS=\n\n' '$1 == "env:" { $0 = "env:'"$travisEnv"'" } { printf "%s%s", $0, RS }' .travis.yml)"
-echo "$travis" > .travis.yml
