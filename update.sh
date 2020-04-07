@@ -60,6 +60,12 @@ for phpVersion in "${phpVersions[@]}"; do
 		dir="$phpVersionDir/$variant"
 		mkdir -p "$dir"
 
+		xdebug="xdebug"
+		result=$(echo "$phpVersion < 7.1" | bc)
+		if [ $result -eq 1 ]; then
+			xdebug="xdebug-2.5.5"
+		fi
+
 		extras="${variantExtras[$variant]:-}"
 		if [ -n "$extras" ]; then
 			extras=$'\n'"$extras"$'\n'
@@ -81,6 +87,7 @@ for phpVersion in "${phpVersions[@]}"; do
 			-e 's!%%WORDPRESS_CLI_SHA512%%!'"$cliSha512"'!g' \
 			-e 's!%%VARIANT_EXTRAS%%!'"$(sed_escape_rhs "$extras")"'!g' \
 			-e 's!%%CMD%%!'"$cmd"'!g' \
+			-e 's!%%XDEBUG_VERSION%%!'"$xdebug"'!g' \
 			"Dockerfile-${base}.template" > "$dir/Dockerfile"
 
 		case "$phpVersion" in

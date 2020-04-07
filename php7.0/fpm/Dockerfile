@@ -50,7 +50,7 @@ RUN set -ex; \
 	rm -rf /var/lib/apt/lists/*
 
 # note for PHP 5.x you have to explicitly specify version pecl install xdebug-2.5.5 since newer versions of xdebug don't support 5.x any more
-RUN pecl install xdebug; \
+RUN pecl install xdebug-2.5.5; \
 	docker-php-ext-enable xdebug
 
 RUN pecl install redis; \
