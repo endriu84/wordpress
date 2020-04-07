@@ -43,7 +43,7 @@ RUN set -ex; \
 	apk del .build-deps
 
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
-    && pecl install xdebug \
+    && pecl install xdebug-2.5.5 \
     && pecl install redis \
     && docker-php-ext-enable xdebug \
     && docker-php-ext-enable redis.so \

@@ -5,7 +5,7 @@ cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 phpVersions=( "$@" )
 if [ ${#phpVersions[@]} -eq 0 ]; then
-	phpVersions=( php*.*/ )
+	phpVersions=( php7.*/ )
 fi
 phpVersions=( "${phpVersions[@]%/}" )
 
