@@ -6,6 +6,7 @@ Fork from Docker "Official Image" for wordpress (https://github.com/docker-libra
 * redis
 * some erlier versions of php ( 5.6, 7.0 and 7.1 ) - not included anymore in "Official Image"
 * option to define wordpress version in the image ( with build argument )
+* user www-data in every image runs as ID 1000 ( no permission issues on ubuntu at least - probably I should make it a build argument )
 
 ## Usage
 example docker-compose.yml file
