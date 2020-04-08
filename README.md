@@ -1,26 +1,36 @@
-# https://github.com/docker-library/wordpress
+# Dockerfiles for local wordpress envirnoment
 
-## Maintained by: [the Docker Community](https://github.com/docker-library/wordpress)
+Fork from Docker "Official Image" for wordpress (https://github.com/docker-library/wordpress), with addition of:
 
-This is the Git repo of the [Docker "Official Image"](https://github.com/docker-library/official-images#what-are-official-images) for [`wordpress`](https://hub.docker.com/_/wordpress/) (not to be confused with any official `wordpress` image provided by `wordpress` upstream). See [the Docker Hub page](https://hub.docker.com/_/wordpress/) for the full readme on how to use this Docker image and for information regarding contributing and issues.
+* xdebug  
+* redis
+* some erlier versions of php ( 5.6, 7.0 and 7.1 ) - not included anymore in "Official Image"
+* option to define wordpress version in the image ( with build argument )
 
-The [full image description on Docker Hub](https://hub.docker.com/_/wordpress/) is generated/maintained over in [the docker-library/docs repository](https://github.com/docker-library/docs), specifically in [the `wordpress` directory](https://github.com/docker-library/docs/tree/master/wordpress).
+## Usage
+example docker-compose.yml file
 
-## See a change merged here that doesn't show up on Docker Hub yet?
+```
+version: '3'
 
-For more information about the full official images change lifecycle, see [the "An image's source changed in Git, now what?" FAQ entry](https://github.com/docker-library/faq#an-images-source-changed-in-git-now-what).
+services:
+  <PROJECT_NAME>_apache:
+    container_name: <PROJECT_NAME>_apache
+    build: 
+      context: ~/dockerfiles/wordpress/php7.3/apache/
+      # args:
+      #   wordpress_version: 5.2.2
+      #   wordpress_sha1: 3605bcbe9ea48d714efa59b0eb2d251657e7d5b0
+    volumes:
+      - ./public:/var/www/html/
+    working_dir: /var/www/html/
+    environment:
+      XDEBUG_CONFIG: profiler_output_name=<PROJECT_NAME>.out.%p
+    labels:
+      - "traefik.http.routers.<PROJECT_NAME>.rule=Host(`<PROJECT_NAME>.localhost`)"
+    networks:
+      - local_proxy
 
-For outstanding `wordpress` image PRs, check [PRs with the "library/wordpress" label on the official-images repository](https://github.com/docker-library/official-images/labels/library%2Fwordpress). For the current "source of truth" for [`wordpress`](https://hub.docker.com/_/wordpress/), see [the `library/wordpress` file in the official-images repository](https://github.com/docker-library/official-images/blob/master/library/wordpress).
-
----
-
--	[![build status badge](https://img.shields.io/travis/docker-library/wordpress/master.svg?label=Travis%20CI)](https://travis-ci.org/docker-library/wordpress/branches)
--	[![build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/update.sh/job/wordpress.svg?label=Automated%20update.sh)](https://doi-janky.infosiftr.net/job/update.sh/job/wordpress)
-
-| Build | Status | Badges | (per-arch) |
-|:-:|:-:|:-:|:-:|
-| [![amd64 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/amd64/job/wordpress.svg?label=amd64)](https://doi-janky.infosiftr.net/job/multiarch/job/amd64/job/wordpress) | [![arm32v5 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/arm32v5/job/wordpress.svg?label=arm32v5)](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v5/job/wordpress) | [![arm32v6 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/arm32v6/job/wordpress.svg?label=arm32v6)](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v6/job/wordpress) | [![arm32v7 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/arm32v7/job/wordpress.svg?label=arm32v7)](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v7/job/wordpress) |
-| [![arm64v8 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/arm64v8/job/wordpress.svg?label=arm64v8)](https://doi-janky.infosiftr.net/job/multiarch/job/arm64v8/job/wordpress) | [![i386 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/i386/job/wordpress.svg?label=i386)](https://doi-janky.infosiftr.net/job/multiarch/job/i386/job/wordpress) | [![ppc64le build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/ppc64le/job/wordpress.svg?label=ppc64le)](https://doi-janky.infosiftr.net/job/multiarch/job/ppc64le/job/wordpress) | [![s390x build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/s390x/job/wordpress.svg?label=s390x)](https://doi-janky.infosiftr.net/job/multiarch/job/s390x/job/wordpress) |
-| [![put-shared build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/put-shared/job/light/job/wordpress.svg?label=put-shared)](https://doi-janky.infosiftr.net/job/put-shared/job/light/job/wordpress) |
-
-<!-- THIS FILE IS GENERATED BY https://github.com/docker-library/docs/blob/master/generate-repo-stub-readme.sh -->
+networks:
+  local_proxy:
+    external: true
