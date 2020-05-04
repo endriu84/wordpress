@@ -35,3 +35,4 @@ services:
 networks:
   local_proxy:
     external: true
+```
