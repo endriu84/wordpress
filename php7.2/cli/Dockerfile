@@ -54,6 +54,12 @@ RUN apk add --no-cache \
 		bash \
 		less \
 		mysql-client
+	
+# change uid and gid for user
+RUN apk --no-cache add shadow; \
+	usermod -u 1000 www-data; \
+    groupmod -g 1000 www-data; \
+	apk del -f shadow
 
 RUN set -ex; \
 	mkdir -p /var/www/html; \

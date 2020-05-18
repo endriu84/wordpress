@@ -99,8 +99,11 @@ RUN { \
 %%VARIANT_EXTRAS%%
 VOLUME /var/www/html
 
-ENV WORDPRESS_VERSION %%WORDPRESS_VERSION%%
-ENV WORDPRESS_SHA1 %%WORDPRESS_SHA1%%
+ARG wordpress_version=%%WORDPRESS_VERSION%%
+ARG wordpress_sha1=%%WORDPRESS_SHA1%%
+
+ENV WORDPRESS_VERSION ${wordpress_version}
+ENV WORDPRESS_SHA1 ${wordpress_sha1}
 
 RUN set -ex; \
 	curl -o wordpress.tar.gz -fSL "https://wordpress.org/wordpress-${WORDPRESS_VERSION}.tar.gz"; \
